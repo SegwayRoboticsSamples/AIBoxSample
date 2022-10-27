@@ -7,5 +7,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-gradle
 .idea
