@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId "com.segway.robot.sample.aibox"
+        minSdkVersion 22
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11 -fexceptions -frtti -Wattributes -Werror=return-type -fvisibility=hidden -O3 -funroll-loops"
+                arguments "-DANDROID_NATIVE_API_LEVEL=android-27",
+                        "-DANDROID_TOOLCHAIN_NAME=clang",
+                        "-DANDROID_STL=c++_static"
+            }
+        }
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+
+        lintOptions {
+            abortOnError false
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = []
+            jniLibs.srcDirs = ['src/main/libs', 'src/main/cpp/lib', "src/main/cpp/dependency/3rdparty_android/tensorflow_lite_gpu_delegate/lib"]
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.segway.robot:vision_aidl:0.7.867'
+    implementation 'com.segway.robot:vision:0.7.867'
+
+}
