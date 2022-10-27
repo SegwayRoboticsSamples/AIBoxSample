@@ -49,12 +49,12 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 void rgba2bgr(cv::Mat &frame, char *data, jint width, jint height) {
     cv::Mat srcFrame(cv::Size(width, height + height / 2), CV_8UC1, data, cv::Mat::AUTO_STEP);
-    cv::cvtColor(srcFrame, frame, CV_YUV2BGR_NV12);
+    cv::cvtColor(srcFrame, frame, CV_RGBA2BGR);
 }
 
 void yuv2bgr(cv::Mat &frame, char *data, jint width, jint height) {
     cv::Mat srcFrame(cv::Size(width, height), CV_8UC4, data, cv::Mat::AUTO_STEP);
-    cv::cvtColor(srcFrame, frame, CV_RGBA2BGR);
+    cv::cvtColor(srcFrame, frame, CV_YUV2BGR_NV12);
 }
 
 JNIEXPORT jobjectArray JNICALL
