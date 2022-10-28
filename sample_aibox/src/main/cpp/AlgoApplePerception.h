@@ -30,11 +30,9 @@ namespace ninebot_algo {
     namespace cnn_ninebot {
         class AlgoApplePerception{
         public:
-            AlgoApplePerception(){};
+            AlgoApplePerception();
 
-            ~AlgoApplePerception(){};
-
-            void PerceptionProcess(const cv::Mat &frame);
+            std::vector<bbox> PerceptionProcess(const cv::Mat &frame);
 
             bool step();    // run algorithm once
             // RawData *_main_rawdata;

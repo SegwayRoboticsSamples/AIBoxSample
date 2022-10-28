@@ -32,42 +32,25 @@ using namespace ninebot_algo;
 using namespace cnn_ninebot;
 // using namespace segway_scooter;
 
-// AlgoPedestrianPerception::AlgoPedestrianPerception(RawData* rawInterface,int run_sleep_ms,
-//                                                std::shared_ptr<cnn_ninebot::sidewalk_perception> ptrCnnPedestrian,
-//                                                Scooter * context, bool is_render)
-//         :AlgoBase(rawInterface,run_sleep_ms)
-// {
-//     mThreadName="pedestrainPerception";
+AlgoApplePerception::AlgoApplePerception(){
+    _sidewalk_config.enable_multi_thread = false;
+    _sidewalk_config.input_width = 512;
+    _sidewalk_config.input_height = 512;
+    _sidewalk_config.input_depth = 3;
+    _sidewalk_config.grid_h = 16;
+    _sidewalk_config.grid_w = 16;
+    _sidewalk_config.num_object = 3;
+    _sidewalk_config.classes = 1;
+    _sidewalk_config.conf_thresh = 0.45;
+    _sidewalk_config.class_thresh = 0.5;
+    _sidewalk_config.nms_thresh = 0.3;
+    _sidewalk_config.frozen_net_path = "/sdcard/slam_config/apple_model.tflite";
+    _sidewalk_config.num_classes = 3;
+    _sidewalk_config.softmax_CE = true;
+    _sidewalk_config.robot_base_type=3000;
 
-//     _ptime=200;
-
-//     _canvas = cv::Mat::zeros(cv::Size(640, 360), CV_8UC3);
-//     _main_rawdata = mRawDataInterface;
-//     this->_is_render = is_render;
-
-//     _uq_pedestrian_perception=ptrCnnPedestrian;
-
-//     _uq_SDP = std::make_unique<ScooterDataProcessor>(_main_rawdata);
-//     _uq_SDP->init();
-
-//     _mContext=context;
-//     segmentor_config sidewalk_config = _uq_pedestrian_perception->get_segmentor_config();
-//     front_mask = getFrontMask();
-
-
-//     ALOGTAGD(TAG,"VisionLog pedestrainPerception init finished.");
-// }
-
-// AlgoPedestrianPerception::~AlgoPedestrianPerception() {
-
-//     ALOGTAGD(TAG,"VisionLog pedestrainPerception destroy.");
-
-//     _uq_pedestrian_perception.reset();
-
-// }
-
-
-
+    _uq_pedestrian_perception = std::make_shared<ninebot_algo::cnn_ninebot::sidewalk_perception>(_sidewalk_config);
+}
 
 std::vector<int> AlgoApplePerception::getFrontMask(){
     segmentor_config sidewalk_config = _uq_pedestrian_perception->get_segmentor_config();
@@ -110,40 +93,7 @@ void AlgoApplePerception::setCropParameter(crop_config &_crop_config, int x, int
     _crop_config.crop_h = h;
 }
 
-
-
-void AlgoApplePerception::PerceptionProcess(const cv::Mat &frame){
-    // frameCnt++;
-    // auto start = std::chrono::high_resolution_clock::now();
-    // _main_rawdata->retrieveFisheyeYUV(_raw_fisheye_yuv);
-
-    // if (_raw_fisheye_yuv.timestampSys == 0)
-    // {
-    //     ALOGTAGE(TAG,"VisionLog _raw_color.timestampSys !");
-    //     return false;
-    // }
-    // struct timeval tv;
-    // gettimeofday(&tv,NULL);
-    // long tmpfisheyetime=tv.tv_sec * 1000 + tv.tv_usec / 1000-_raw_fisheye_yuv.timestampSys/1000;
-    // /*
-    // if(tmpfisheyetime>200){
-    //     ALOGTAGE(TAG,"VisionLog finsheye delay >200ms !");
-    //     return false;
-    // }
-    // */
-    // if(_raw_fisheye_yuv.image.channels() != 1)
-    // {
-    //     ALOGTAGD(TAG,"VisionLog _raw_color.image.channels() != 1 !");
-    //     return false;
-    // }
-
-    // ALOGTAGD(TAG,"VisionLog AlgoApplePerception Begin!");
-    std::shared_ptr<cnn_ninebot::sidewalk_perception> _uq_pedestrian_perception;
-
-
-    // cv::Mat tcolor, frame;
-    // cv::cvtColor(_raw_fisheye_yuv.image, tcolor, CV_YUV2BGR_NV12);
-    // frame = tcolor.clone();
+vector<bbox> AlgoApplePerception::PerceptionProcess(const cv::Mat &frame){
 
     auto coreAlgoStart = std::chrono::high_resolution_clock::now();
 
@@ -188,14 +138,6 @@ void AlgoApplePerception::PerceptionProcess(const cv::Mat &frame){
 
     cv::Mat mask;
     cv::Mat seg_choose;
-    // int64_t pathTimeStamp;
-    // bool sidewalk_flag;
-
-    // getLock();
-    // seg_choose = _mContext->p_res->getSegChoose(pathTimeStamp);
-    // sidewalk_flag = _mContext->p_res->getSideWalkFlag(pathTimeStamp);
-    // mask = _mContext->p_res->getMask(pathTimeStamp);
-    // releaseLock();
 
     for (int bid = 0; bid < pedestrian_res.size(); bid++){
         int ptx1_resized = _crop_config.crop_x + (int)(pedestrian_res[bid].x1 * _crop_config.crop_w);
@@ -206,69 +148,13 @@ void AlgoApplePerception::PerceptionProcess(const cv::Mat &frame){
         interset(ptx1_resized, pty1_resized, ptx2_resized, pty2_resized,
                 _crop_config.crop_w, _crop_config.crop_h);
 
-        rectangle(frame, cv::Point(ptx1_resized, pty1_resized),
-                        cv::Point(ptx2_resized, pty2_resized), cv::Scalar(0, 255, 0), 2);
-
-        // cv::Mat seg_choose_resize;
-        // cv::resize(seg_choose, seg_choose_resize, cv::Size(original_width, original_height));
-
-
-        // pedestrian_coord.push_back(cv::Point(
-        //         (int)((ptx1_resized + ptx2_resized) / 2),
-        //         pty2_resized));
-        // pedestrian_bboxes.push_back(cv::Rect(
-        //         ptx1_resized, pty1_resized,
-        //         ptx2_resized,
-        //         pty2_resized));
+        pedestrian_res[bid].x1 = ptx1_resized;
+        pedestrian_res[bid].x2 = ptx2_resized;
+        pedestrian_res[bid].y1 = pty1_resized;
+        pedestrian_res[bid].y2 = pty2_resized;
     }
+    return pedestrian_res;
 
-    // auto coreAlgoPedFil = std::chrono::high_resolution_clock::now();
-
-    // // Pedestrian Distance
-    // std::vector<float> pts_x, pts_y;
-    // for(int pt_id = 0; pt_id < pedestrian_coord.size(); ++pt_id){
-    //     pts_x.push_back(pedestrian_coord[pt_id].x);
-    //     pts_y.push_back(pedestrian_coord[pt_id].y);
-    // }
-
-    // if(pedestrainFilVec.size() >= 5){
-    //     pedestrainFilVec.erase(pedestrainFilVec.begin(), pedestrainFilVec.begin() + 1);
-    //     pedestrainFilVec.push_back(pts_x.size());
-    // }
-    // else{
-    //     pedestrainFilVec.push_back(pts_x.size());
-    // }
-
-    // auto maxNum = max_element(pedestrainFilVec.begin(), pedestrainFilVec.end());
-    // int maxPedestrainNum = *maxNum;
-    // ALOGTAGD(TAG,"VisionLog pedestrainPerception personCnt %d persons", maxPedestrainNum);
-
-    // auto coreAlgoEnd = std::chrono::high_resolution_clock::now();
-    // std::chrono::duration<double, std::milli> elapsedCore = coreAlgoEnd - coreAlgoStart;
-    // ALOGTAGD(TAG,"VisionLog pedestrainPerception Time, total core algo cost %f ms", elapsedCore.count());
-    // ALOGTAGD(TAG,"VisionLog pedestrainPerception res, personCnt, total detected %d persons", pts_x.size());
-
-
-    // // Result
-    // return maxPedestrainNum;
 }
 
 
-
-//int main(int argc, char** argv)
-//{
-//    string image_path = argv[1];
-//    cout << "image_path:" << image_path << endl;
-//
-//    Mat image = imread(image_path);
-//    if (image.empty())
-//    {
-//        cerr << "Read image " << image_path << " failed!";
-//        exit(1);
-//    }
-//
-//    AlgoApplePerception algoApplePerception;
-//    algoApplePerception.PerceptionProcess(image);
-//
-//    imwrite("./res.jpg", image);
-//}

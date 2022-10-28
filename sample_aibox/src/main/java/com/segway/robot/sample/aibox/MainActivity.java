@@ -200,8 +200,8 @@ public class MainActivity extends AppCompatActivity {
                 mIsBind = true;
                 try {
                     //Obtain internal calibration data
-                    RS2Intrinsic intrinsics = Vision.getInstance().getIntrinsics(VisionStreamType.FISH_EYE);
-                    Log.d(TAG, "intrinsics: " + intrinsics);
+//                    RS2Intrinsic intrinsics = Vision.getInstance().getIntrinsics(VisionStreamType.FISH_EYE);
+//                    Log.d(TAG, "intrinsics: " + intrinsics);
                     Vision.getInstance().startVision(VisionStreamType.FISH_EYE);
 
                     mWorkThread = new VisionWorkThread();
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     mRectList.clear();
                     if (mDetectedResults != null) {
                         for (DetectedResult result : mDetectedResults) {
-                            mRectList.add(new RectF(result.x1, result.y1, result.x2, result.y2));
+                            mRectList.add(new RectF(result.x1/4, result.y1/4, result.x2/4, result.y2/4.));
                         }
                     }
                     mImageView.mark(mRectList);
