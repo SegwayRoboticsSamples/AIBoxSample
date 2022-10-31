@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 1;
     private static String[] PERMISSIONS_STORAGE = {"android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE"};
+    private static final int BITMAP_SCALE = 4;
     private VisionImageView mImageView;
     private volatile boolean mIsBind;
     private volatile boolean mIsDetecting;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
     private ByteBuffer mData;
     private DetectedResult[] mDetectedResults;
     private List<RectF> mRectList = new ArrayList<>();
+    private int mImageViewWidth;
+    private int mImageViewHeight;
 
     static {
         System.loadLibrary("vision_aibox");
@@ -244,7 +248,21 @@ public class MainActivity extends AppCompatActivity {
                     mRectList.clear();
                     if (mDetectedResults != null) {
                         for (DetectedResult result : mDetectedResults) {
-                            mRectList.add(new RectF(result.x1, result.y1, result.x2, result.y2));
+                            mRectList.add(new RectF(result.x1 / BITMAP_SCALE, result.y1 / BITMAP_SCALE,
+                                    result.x2 / BITMAP_SCALE, result.y2 / BITMAP_SCALE));
+                        }
+                    }
+                    if(mBitmap != null) {
+                        int width = mBitmap.getWidth() / BITMAP_SCALE;
+                        int height = mBitmap.getHeight() / BITMAP_SCALE;
+                        if (width != mImageViewWidth || height != mImageViewHeight) {
+                            mImageViewWidth = width;
+                            mImageViewHeight = height;
+                            ViewGroup.LayoutParams layoutParams = mImageView.getLayoutParams();
+                            layoutParams.width = mImageViewWidth;
+                            layoutParams.height = mImageViewHeight;
+                            mImageView.setLayoutParams(layoutParams);
+
                         }
                     }
                     mImageView.mark(mRectList);
