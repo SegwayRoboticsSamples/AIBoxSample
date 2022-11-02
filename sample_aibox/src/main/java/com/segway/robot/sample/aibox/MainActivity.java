@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         mData.rewind();
                         Bitmap bitmap = mBitmap.copy(mBitmap.getConfig(), true);
-                        mBitmap.copyPixelsFromBuffer(mData);
+                        mBitmap.copyPixelsToBuffer(mData);
                         mBitmap = bitmap;
                         mDetectedResults = VisionNative.nativeDetect(mData, PixelFormat.RGBA8888, mBitmap.getWidth(), mBitmap.getHeight());
                     } else {
