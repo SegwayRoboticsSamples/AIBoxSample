@@ -33,17 +33,9 @@ include_directories(src/main/cpp
         ${OpenCV_INCLUDE_DIRS}
         ${ANDROID_SYSROOT}/usr/include/aarch64-linux-android)
 
-add_library(SidewalkPerception SHARED IMPORTED)
-set_target_properties( # Specifies the target library.
-        SidewalkPerception
-        # Specifies the parameter you want to define.
-        PROPERTIES IMPORTED_LOCATION
-
-        # Provides the path to the library you want to import.
-        ${PROJECT_SOURCE_DIR}/lib/${ANDROID_ABI}/libSidewalkPerception.so)
-
 add_library(vision_aibox SHARED
         VisionNative.cpp
+        ApplePerception.cpp
         AlgoApplePerception.cpp
         )
 
@@ -52,5 +44,4 @@ target_link_libraries(vision_aibox
         log
         ${OpenCV_LIBS}
         ${PACK_LIB_LIST}
-        SidewalkPerception
         )

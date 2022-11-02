@@ -60,7 +60,7 @@ void rgba2bgr(cv::Mat &frame, char *data, jint width, jint height) {
     cv::Mat srcFrame(cv::Size(width, height), CV_8UC4, data, cv::Mat::AUTO_STEP);
     cv::Mat resizeFrame;
     cv::cvtColor(srcFrame, resizeFrame, CV_RGBA2BGR);
-    cv::resize(resizeFrame, frame, cv::Size(1280, 720));
+    cv::resize(resizeFrame, frame, cv::Size(1920, 1080));
     cv::imwrite("/sdcard/apple1.jpeg", frame);
     LOGD("detect, frame.cols %d, frame.rows %d", frame.cols, frame.rows);
 }

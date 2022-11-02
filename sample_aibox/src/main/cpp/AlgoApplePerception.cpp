@@ -2,8 +2,7 @@
 // Created by chenpeng on 2019/5/8.
 //
 #include "AlgoApplePerception.h"
-// #include "../util/app_callback.h"
-// #include "../core/Scooter.h"
+
 #include <chrono>
 #include <cmath>
 #include <time.h>
@@ -15,16 +14,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-// #include "ImuProcess.h"
-// #include "RawDataUtil.h"
-
-
 #define SHOW_IMG_RES
 //#define USE_TOF_IN_PERC
 #define TAG "AlgoApplePerception"
-#define PEDEST  "pedestrian"
-#define SIDEW   "sidewalk"
-#define PARKS  "parkingSpace"
 
 using namespace cv;
 using namespace std;
@@ -49,7 +41,7 @@ AlgoApplePerception::AlgoApplePerception(){
     _sidewalk_config.softmax_CE = true;
     _sidewalk_config.robot_base_type=3000;
 
-    _uq_pedestrian_perception = std::make_shared<ninebot_algo::cnn_ninebot::sidewalk_perception>(_sidewalk_config);
+    _uq_pedestrian_perception = std::make_shared<ninebot_algo::cnn_ninebot::ApplePerception>(_sidewalk_config);
 }
 
 std::vector<int> AlgoApplePerception::getFrontMask(){

@@ -6,7 +6,7 @@
 #define VISIONSERVICE_VISIONNATIVE_H
 
 #include <jni.h>
-#include "./include/sidewalk_perception.h"
+#include "./include/ApplePerception.h"
 #include <list>
 
 void rgba2bgr(cv::Mat &frame, char *data, jint width, jint height);

@@ -1,30 +1,9 @@
-//
-// Created by hanjun zhang on 2022/2/14.
-//
-
-#ifndef CS_VISION_ALGO_ALGOPEDESTRAINPERCEPTION_H
-#define CS_VISION_ALGO_ALGOPEDESTRAINPERCEPTION_H
+#ifndef ALGOAPPLEPERCEPTION_H
+#define ALGOAPPLEPERCEPTION_H
 
 // #include "AlgoBase.h"
-#include "./include/sidewalk_perception.h"
-
-// #include <android/asset_manager.h>
-// #include <android/asset_manager_jni.h>
-// #include <android/log.h>
-
-// #include "ninebot_log.h"
-// #include "../util/app_callback.h"
-// #include "ScooterDataProcessor.h"
-// #include "DataRecorder.h"
-// #include "PerceptionRes.h"
-// #include "RawData.h"
-// #include "RawDataUtil.h"
-// #include "../util/FisheyeCalibrationUtil.hpp"
+#include "./include/ApplePerception.h"
 #include <map>
-
-// namespace segway_scooter {
-//     class Scooter;
-// }
 
 namespace ninebot_algo {
     namespace cnn_ninebot {
@@ -60,7 +39,7 @@ namespace ninebot_algo {
 
             bool _canDetection = false;
 
-            std::shared_ptr<sidewalk_perception> _uq_pedestrian_perception;
+            std::shared_ptr<ApplePerception> _uq_pedestrian_perception;
 
             // std::unique_ptr<ScooterDataProcessor> _uq_SDP;
             segmentor_config _sidewalk_config;

@@ -1,17 +1,13 @@
-#pragma once
+#ifndef APPLEPERCEPTION_H
+#define APPLEPERCEPTION_H
 
 #include <thread>
 #include <mutex>
 #include <tensorflow/lite/context.h>
-//#include <tensorflow/contrib/lite/context.h>
-
 #include <opencv2/opencv.hpp>
 #include <unordered_map>
 
 #define _FOV_DISTORTION_
-// #define _DOUBLE_SPHERES_DISTORTION_
-
-// lib version 1.0.61
 
 namespace tflite {
 	class Interpreter;
@@ -101,17 +97,11 @@ namespace ninebot_algo { namespace cnn_ninebot {
         float nms_thresh = 0.3;
 
 	};
-	class sidewalk_perception {
+	class ApplePerception {
 	public:
-		sidewalk_perception(const segmentor_config &cfg);
-		~sidewalk_perception();
-        void operator() (const cv::Mat &src_img, const float threshold, cv::Mat& fisheye_mask_result);
+		ApplePerception(const segmentor_config &cfg);
+		~ApplePerception();
 		void operator() (const cv::Mat &src_img, std::vector<bbox> &pedestrian_boxes, int handLoc);
-		void operator() (const cv::Mat &src_img, int &classification_res);
-
-		 //parking slot
-        cv::Mat getParkingSlotRes(const cv::Mat &src_img, const float threshold);
-
 
         segmentor_config get_segmentor_config();
 	private:
@@ -123,18 +113,9 @@ namespace ninebot_algo { namespace cnn_ninebot {
 		mutable std::mutex operator_mutex_;
 
 		bool is_large_fov_;
-		cv::Mat road_seg_res_parse(TfLiteTensor* p_tflts_output, float threshold) const;
-		int road_classification_res_parse(TfLiteTensor* p_tflts_output);
 		void pedestrian_yolo_parse(const std::vector<TfLiteTensor*> outs, std::vector<bbox> &pedestrian_boxes);
-
-		//parking slot inference
-		cv::Mat parkingSlotParse(TfLiteTensor* p_tflts_output, float threshold) const;
-		void parkingSlotRunQuantization(const cv::Mat &src_img, const float threshold, cv::Mat& fisheye_mask_result);
-
-		void run_quantization(const cv::Mat &src_img, const float threshold, cv::Mat& fisheye_mask_result);
 		void run_quantization(const cv::Mat &src_img, std::vector<bbox> &pedestrian_boxes, int handLoc);
-		void run_quantization(const cv::Mat &src_img, int &classification_res);
-
     	bool large_fov_decider();
 	};
 } }
+#endif
