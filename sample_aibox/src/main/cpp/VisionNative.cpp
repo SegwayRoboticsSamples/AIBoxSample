@@ -65,7 +65,7 @@ void rgba2bgr(cv::Mat &frame, char *data, jint width, jint height) {
     LOGD("detect, frame.cols %d, frame.rows %d", frame.cols, frame.rows);
 }
 
-AlgoApplePerception algoApplePerception;
+AlgoApplePerception *algoApplePerception = nullptr;
 
 JNIEXPORT jobjectArray JNICALL
 jni_detect(JNIEnv *env, jclass obj, jobject data, jint format, jint width, jint height) {
@@ -87,7 +87,10 @@ jni_detect(JNIEnv *env, jclass obj, jobject data, jint format, jint width, jint 
     }
 
     //调用算法
-    std::vector<bbox> appleDetectResult = algoApplePerception.PerceptionProcess(frame);
+    if (algoApplePerception == nullptr) {
+        algoApplePerception = new AlgoApplePerception();
+    }
+    std::vector<bbox> appleDetectResult = algoApplePerception->PerceptionProcess(frame);
     LOGD("appleDetectResult size is %d", appleDetectResult.size());
 
     jobjectArray objArray = env->NewObjectArray(appleDetectResult.size(), mDetectedResult.clazz, nullptr);
