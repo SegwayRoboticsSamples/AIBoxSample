@@ -108,7 +108,6 @@ vector<bbox> AlgoApplePerception::PerceptionProcess(const cv::Mat &frame){
     std::vector<bbox> pedestrian_res;
     if((1920 == frame.cols) && (1080 == frame.rows)){
         setCropParameter(_crop_config, 240, 0, 1440, 1080);
-
         cv::Mat cropped_frame;
         cv::Rect crop_rect = cv::Rect(_crop_config.crop_x, _crop_config.crop_y, _crop_config.crop_w, _crop_config.crop_h);
         cropped_frame = frame(crop_rect);

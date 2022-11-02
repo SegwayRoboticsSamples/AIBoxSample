@@ -55,8 +55,14 @@ void yuv2bgr(cv::Mat &frame, char *data, jint width, jint height) {
 }
 
 void rgba2bgr(cv::Mat &frame, char *data, jint width, jint height) {
+    //cv::Mat srcFrame(cv::Size(width, height), CV_8UC4, data, cv::Mat::AUTO_STEP);
+    //cv::cvtColor(srcFrame, frame, CV_RGBA2BGR);
     cv::Mat srcFrame(cv::Size(width, height), CV_8UC4, data, cv::Mat::AUTO_STEP);
-    cv::cvtColor(srcFrame, frame, CV_RGBA2BGR);
+    cv::Mat resizeFrame;
+    cv::cvtColor(srcFrame, resizeFrame, CV_RGBA2BGR);
+    cv::resize(resizeFrame, frame, cv::Size(1280, 720));
+    cv::imwrite("/sdcard/apple1.jpeg", frame);
+    LOGD("detect, frame.cols %d, frame.rows %d", frame.cols, frame.rows);
 }
 
 AlgoApplePerception algoApplePerception;
@@ -70,9 +76,11 @@ jni_detect(JNIEnv *env, jclass obj, jobject data, jint format, jint width, jint 
     switch (format) {
         case RGBA8888:
             rgba2bgr(frame, imageData, width, height);
+            LOGD("detect image");
             break;
         case YUV420:
             yuv2bgr(frame, imageData, width, height);
+            LOGD("detect video");
             break;
         default:
             return nullptr;
