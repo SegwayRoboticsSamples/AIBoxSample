@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private volatile boolean mIsImageStarted;
     private volatile boolean mIsCameraStarted;
     private Bitmap mBitmap;
-    private Thread mWorkThread;
+    private Thread mVisionWorkThread;
+    private Thread mImageWorkThread;
     private final Object mBitmapLock = new Object();
     private Button mBtnOpenImage;
     private Button mBtnCloseImage;
@@ -71,6 +72,13 @@ public class MainActivity extends AppCompatActivity {
         mBtnStop = findViewById(R.id.btn_stop);
         checkPermission();
         resetUI();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        closeImage();
+        closeCamera();
     }
 
     private void resetUI() {
@@ -127,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
         mBtnOpenCamera.setEnabled(false);
 
         mIsImageStarted = true;
-        mWorkThread = new ImageWorkThread();
-        mWorkThread.start();
+        mImageWorkThread = new ImageWorkThread();
+        mImageWorkThread.start();
 
         mBtnStart.setEnabled(true);
         mBtnCloseImage.setEnabled(true);
@@ -141,14 +149,14 @@ public class MainActivity extends AppCompatActivity {
             stopDetect();
         }
         mIsImageStarted = false;
-        if (mWorkThread != null) {
+        if (mVisionWorkThread != null) {
             try {
-                mWorkThread.interrupt();
-                mWorkThread.join();
+                mImageWorkThread.interrupt();
+                mImageWorkThread.join();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mWorkThread = null;
+            mImageWorkThread = null;
         }
         resetUI();
     }
@@ -165,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
             stopDetect();
         }
         unbindAndStopVision();
-        if (mWorkThread != null) {
+        if (mVisionWorkThread != null) {
             try {
-                mWorkThread.interrupt();
-                mWorkThread.join();
+                mVisionWorkThread.interrupt();
+                mVisionWorkThread.join();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            mWorkThread = null;
+            mVisionWorkThread = null;
         }
         resetUI();
     }
@@ -208,8 +216,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "intrinsics: " + intrinsics);
                     Vision.getInstance().startVision(VisionStreamType.FISH_EYE);
 
-                    mWorkThread = new VisionWorkThread();
-                    mWorkThread.start();
+                    mVisionWorkThread = new VisionWorkThread();
+                    mVisionWorkThread.start();
                     mBtnOpenCamera.setEnabled(false);
                     mBtnStart.setEnabled(true);
                     mBtnCloseCamera.setEnabled(true);
