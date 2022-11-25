@@ -36,7 +36,7 @@ AlgoApplePerception::AlgoApplePerception(){
     _sidewalk_config.conf_thresh = 0.45;
     _sidewalk_config.class_thresh = 0.5;
     _sidewalk_config.nms_thresh = 0.3;
-    _sidewalk_config.frozen_net_path = "/sdcard/slam_config/apple_model.tflite";
+    _sidewalk_config.frozen_net_path = "/sdcard/apple_model.tflite";
     _sidewalk_config.num_classes = 3;
     _sidewalk_config.softmax_CE = true;
     _sidewalk_config.robot_base_type=3000;
